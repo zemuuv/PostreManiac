@@ -1,0 +1,124 @@
+# 🍰 PostreManiac
+
+## 📌 Descripción del Proyecto
+
+PostreManiac es una aplicación móvil diseñada para organizar y gestionar un emprendimiento de postres. 
+La aplicación permite administrar productos, pedidos y clientes de manera digital, facilitando el control del negocio y mejorando la organización del emprendimiento.
+
+El sistema está compuesto por:
+
+- 📱 Una aplicación móvil desarrollada en React Native con Expo.
+- 🚀 Una API REST desarrollada en Spring Boot.
+- ☁️ Integración con Firebase (Firestore) para almacenamiento en la nube.
+- 🔄 Consumo de la API desde la aplicación móvil.
+
+---
+
+## 🏗️ Arquitectura del Proyecto
+
+El proyecto sigue una arquitectura cliente-servidor:
+
+Aplicación Móvil (Frontend)
+↓
+API REST (Spring Boot)
+↓
+Base de Datos (Firestore / Firebase)
+
+- El frontend consume los endpoints expuestos por la API.
+- La API gestiona la lógica del negocio.
+- Firestore almacena la información del sistema.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+### 📱 Frontend
+- React Native
+- Expo
+- JavaScript
+
+### 🚀 Backend
+- Spring Boot
+- Java
+- API REST
+
+### ☁️ Base de Datos
+- Firebase
+- Firestore
+
+### 🔧 Control de Versiones
+- Git
+- GitHub
+
+---
+
+## 📂 Estructura del Proyecto (Frontend)
+
+PostreManiac/
+│
+├── app/                → Rutas y pantallas (Expo Router)
+├── src/
+│   ├── components/     → Componentes reutilizables
+│   ├── services/       → Configuración Firebase y consumo API
+│   ├── context/        → Manejo de estado global
+│   └── utils/          → Funciones auxiliares
+│
+├── assets/             → Recursos estáticos
+├── .gitignore
+├── README.md
+└── package.json
+
+---
+
+## 🔥 Funcionalidades Principales
+
+- Registro y gestión de productos (postres).
+- Visualización de catálogo.
+- Gestión de pedidos.
+- Administración básica del emprendimiento.
+- Conexión con API REST para operaciones CRUD.
+- Almacenamiento de datos en Firestore.
+
+---
+
+## ▶️ Instalación y Ejecución (Frontend)
+
+1. Clonar el repositorio:
+   git clone https://github.com/tuusuario/zemuuv/PostreManiac.git
+
+2. Ingresar al proyecto:
+   cd PostreManiac
+
+3. Instalar dependencias:
+   npm install
+
+4. Ejecutar el proyecto:
+   npx expo start
+
+---
+
+## ▶️ Ejecución del Backend (Spring Boot)
+
+1. Abrir el proyecto en un IDE (IntelliJ, VS Code o Eclipse).
+2. Ejecutar la clase principal del proyecto Spring Boot.
+3. Verificar que la API esté corriendo en:
+   http://localhost:8080
+
+---
+
+## 📌 Objetivo Académico
+
+Este proyecto tiene como finalidad aplicar conocimientos en:
+
+- Desarrollo móvil
+- Desarrollo de API REST
+- Arquitectura cliente-servidor
+- Integración con servicios en la nube
+- Control de versiones con Git
+
+---
+
+## 👨‍💻 Autor
+
+Samuel Vargas  
+Ingeniería de Sistemas

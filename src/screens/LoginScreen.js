@@ -19,7 +19,7 @@ export default function LoginScreen({ navigation }) {
     Alert.alert("Éxito", "Login correcto");
 
     // ✅ REDIRECCIÓN
-    navigation.replace("Welcome");
+    navigation.replace("Main");
 
   } catch (error) {
     Alert.alert("Error", error.response?.data || "Error al iniciar sesión");

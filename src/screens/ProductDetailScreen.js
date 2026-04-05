@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     View,
     Text,
@@ -12,12 +12,17 @@ import { Ionicons } from "@expo/vector-icons";
 import { deleteProducto } from "../services/productService";
 import { getUserRole } from "../utils/auth";
 
+// 🔥 CONTEXT DEL CARRITO
+import { CartContext } from "../context/cartContext";
+
 export default function ProductDetailScreen({ route, navigation }) {
 
     const { producto } = route.params;
 
     const [cantidad, setCantidad] = useState(1);
     const [role, setRole] = useState(null);
+
+    const { agregarAlCarrito } = useContext(CartContext);
 
     useEffect(() => {
         cargarRol();
@@ -42,8 +47,23 @@ export default function ProductDetailScreen({ route, navigation }) {
 
     const subtotal = producto.precio * cantidad;
 
+    // 🔥 AGREGAR AL CARRITO
+    const handleAgregar = () => {
+
+        if (!producto.id) {
+            console.log("❌ Producto sin ID:", producto);
+            return Alert.alert("Error", "El producto no tiene ID");
+        }
+
+        agregarAlCarrito(producto, cantidad);
+
+        Alert.alert("Listo", "Producto agregado al carrito 🛒");
+
+        navigation.goBack();
+    };
+
     // 🔥 ELIMINAR PRODUCTO
-    const eliminarProducto = () => {
+    const eliminarProductoHandler = () => {
         Alert.alert(
             "Eliminar producto",
             "¿Estás seguro de eliminar este producto?",
@@ -58,7 +78,7 @@ export default function ProductDetailScreen({ route, navigation }) {
 
                             Alert.alert("Éxito", "Producto eliminado");
 
-                            navigation.navigate("Catalogo", { refresh: true });
+                            navigation.navigate("Main", { refresh: true });
 
                         } catch (error) {
                             console.log(error);
@@ -80,7 +100,7 @@ export default function ProductDetailScreen({ route, navigation }) {
 
             {/* 🗑 BOTÓN ELIMINAR (ADMIN) */}
             {role === "ADMIN" && (
-                <TouchableOpacity style={styles.deleteButton} onPress={eliminarProducto}>
+                <TouchableOpacity style={styles.deleteButton} onPress={eliminarProductoHandler}>
                     <Ionicons name="trash" size={22} color="#fff" />
                 </TouchableOpacity>
             )}
@@ -143,7 +163,7 @@ export default function ProductDetailScreen({ route, navigation }) {
                 </Text>
 
                 {/* 🛒 BOTÓN */}
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleAgregar}>
                     <Text style={styles.buttonText}>Agregar al carrito</Text>
                 </TouchableOpacity>
 

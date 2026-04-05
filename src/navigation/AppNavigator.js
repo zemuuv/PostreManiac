@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 
-// 🔥 NUEVO
 import TabNavigator from "./TabNavigator";
 import AddProductScreen from "../screens/AddProductScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
@@ -13,39 +12,37 @@ const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator
+      initialRouteName="Login"
+      screenOptions={{
+        headerShown: false,
+        animation: "slide_from_right"
+      }}
+    >
 
-      {/* 🔐 AUTENTICACIÓN */}
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ headerShown: false }}
-      />
+      {/* 🔐 AUTH */}
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
 
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{ headerShown: false }}
-      />
+      {/* 🔥 APP PRINCIPAL */}
+      <Stack.Screen name="Main" component={TabNavigator} />
 
+      {/* 📦 DETALLE PRODUCTO */}
       <Stack.Screen
         name="ProductDetail"
         component={ProductDetailScreen}
-        options={{ headerShown: false }}
+        options={{
+          animation: "fade" // 🔥 más elegante
+        }}
       />
 
-      {/* 🔥 APP PRINCIPAL (tabs abajo) */}
-      <Stack.Screen
-        name="Main"
-        component={TabNavigator}
-        options={{ headerShown: false }}
-      />
-
-      {/* ➕ Pantalla secundaria */}
+      {/* ➕ AGREGAR PRODUCTO */}
       <Stack.Screen
         name="AddProduct"
         component={AddProductScreen}
-        options={{ title: "Agregar Postre" }}
+        options={{
+          presentation: "modal" // 🔥 se abre como modal tipo app moderna
+        }}
       />
 
     </Stack.Navigator>

@@ -1,11 +1,14 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigator from "./src/navigation/AppNavigator";
+import { CartProvider } from "./src/context/cartContext";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+    <CartProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </CartProvider>
   );
 }

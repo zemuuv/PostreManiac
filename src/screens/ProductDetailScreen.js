@@ -4,20 +4,21 @@ import {
     Text,
     Image,
     StyleSheet,
-    TouchableOpacity,
-    Alert
+    TouchableOpacity
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import { deleteProducto } from "../services/productService";
 import { getUserRole } from "../utils/auth";
+import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
 
-// 🔥 CONTEXT DEL CARRITO
 import { CartContext } from "../context/cartContext";
 
 export default function ProductDetailScreen({ route, navigation }) {
 
     const { producto } = route.params;
+
+    const { showAlert, showConfirm } = useAlert(); // ✅ ALERT GLOBAL
 
     const [cantidad, setCantidad] = useState(1);
     const [role, setRole] = useState(null);
@@ -52,66 +53,57 @@ export default function ProductDetailScreen({ route, navigation }) {
 
         if (!producto.id) {
             console.log("❌ Producto sin ID:", producto);
-            return Alert.alert("Error", "El producto no tiene ID");
+            return showAlert("Error", "El producto no tiene ID", "error");
         }
 
         agregarAlCarrito(producto, cantidad);
 
-        Alert.alert("Listo", "Producto agregado al carrito 🛒");
+        showAlert("Listo", "Producto agregado al carrito 🛒", "success");
 
         navigation.goBack();
     };
 
-    // 🔥 ELIMINAR PRODUCTO
+    // 🔥 ELIMINAR PRODUCTO (YA CON CONFIRM GLOBAL)
     const eliminarProductoHandler = () => {
-        Alert.alert(
+
+        showConfirm(
             "Eliminar producto",
             "¿Estás seguro de eliminar este producto?",
-            [
-                { text: "Cancelar", style: "cancel" },
-                {
-                    text: "Eliminar",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            await deleteProducto(producto.id);
+            async () => {
+                try {
+                    await deleteProducto(producto.id);
 
-                            Alert.alert("Éxito", "Producto eliminado");
+                    showAlert("Éxito", "Producto eliminado", "success");
 
-                            navigation.navigate("Main", { refresh: true });
+                    navigation.navigate("Main", { refresh: true });
 
-                        } catch (error) {
-                            console.log(error);
-                            Alert.alert("Error", "No se pudo eliminar");
-                        }
-                    }
+                } catch (error) {
+                    console.log(error);
+                    showAlert("Error", "No se pudo eliminar", "error");
                 }
-            ]
+            },
+            "warning"
         );
     };
 
     return (
         <View style={styles.container}>
 
-            {/* 🔙 BOTÓN ATRÁS */}
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Ionicons name="arrow-back" size={24} color="#333" />
             </TouchableOpacity>
 
-            {/* 🗑 BOTÓN ELIMINAR (ADMIN) */}
             {role === "ADMIN" && (
                 <TouchableOpacity style={styles.deleteButton} onPress={eliminarProductoHandler}>
                     <Ionicons name="trash" size={22} color="#fff" />
                 </TouchableOpacity>
             )}
 
-            {/* 🖼 IMAGEN */}
             <Image
                 source={{ uri: producto.imagen }}
                 style={styles.image}
             />
 
-            {/* 📦 DETALLE */}
             <View style={styles.detailContainer}>
 
                 <View style={styles.headerRow}>
@@ -124,7 +116,6 @@ export default function ProductDetailScreen({ route, navigation }) {
                     {producto.descripcion || "Sin descripción"}
                 </Text>
 
-                {/* 🔢 CANTIDAD */}
                 <Text style={styles.subtitle}>Cantidad</Text>
 
                 <View style={styles.cantidadContainer}>
@@ -157,12 +148,10 @@ export default function ProductDetailScreen({ route, navigation }) {
                     Stock disponible: {producto.stock}
                 </Text>
 
-                {/* 💰 SUBTOTAL */}
                 <Text style={styles.subtotal}>
                     Subtotal: ${subtotal.toFixed(2)}
                 </Text>
 
-                {/* 🛒 BOTÓN */}
                 <TouchableOpacity style={styles.button} onPress={handleAgregar}>
                     <Text style={styles.buttonText}>Agregar al carrito</Text>
                 </TouchableOpacity>

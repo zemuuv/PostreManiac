@@ -5,7 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import CatalogScreen from "../screens/CatalogScreen";
 import CartScreen from "../screens/CartScreen";
 import AdminOrdersScreen from "../screens/AdminOrdersScreen";
-import UserOrdersScreen from "../screens/UserOrdersScreen"; // 🔥 NUEVO
+import UserOrdersScreen from "../screens/UserOrdersScreen";
+import ComentariosScreen from "../screens/ComentariosScreen"; // 🔥 NUEVO
 
 import { getUserRole } from "../utils/auth";
 
@@ -50,7 +51,9 @@ export default function TabNavigator() {
           } else if (route.name === "Carrito") {
             iconName = focused ? "cart" : "cart-outline";
           } else if (route.name === "Pedidos") {
-            iconName = focused ? "receipt" : "receipt-outline"; // 🔥 NUEVO ICONO
+            iconName = focused ? "receipt" : "receipt-outline";
+          } else if (route.name === "Comentarios") {
+            iconName = focused ? "chatbubble" : "chatbubble-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -70,6 +73,13 @@ export default function TabNavigator() {
         name="Carrito"
         component={CartScreen}
         options={{ tabBarLabel: "Carrito" }}
+      />
+
+      {/* 💬 COMENTARIOS */}
+      <Tab.Screen
+        name="Comentarios"
+        component={ComentariosScreen}
+        options={{ tabBarLabel: "Comentarios" }}
       />
 
       {/* 👑 ADMIN */}

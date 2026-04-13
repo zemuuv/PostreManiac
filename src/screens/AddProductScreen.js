@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
   Image
 } from "react-native";
@@ -13,15 +12,18 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { createProducto } from "../services/productService";
 import { subirImagenFirebase } from "../services/imageService";
+import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
 
 export default function AddProductScreen({ navigation }) {
+
+  const { showAlert } = useAlert(); // ✅ HOOK GLOBAL
 
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
   const [imagen, setImagen] = useState(null);
-  const [estado, setEstado] = useState("DISPONIBLE"); // 🔥 ahora es string directo
+  const [estado, setEstado] = useState("DISPONIBLE");
   const [loading, setLoading] = useState(false);
 
   // 📸 Seleccionar imagen
@@ -30,7 +32,7 @@ export default function AddProductScreen({ navigation }) {
       const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (!permiso.granted) {
-        Alert.alert("Permiso requerido", "Necesitamos acceso a tus fotos");
+        showAlert("Permiso requerido", "Necesitamos acceso a tus fotos");
         return;
       }
 
@@ -45,11 +47,10 @@ export default function AddProductScreen({ navigation }) {
 
     } catch (error) {
       console.log("Error seleccionando imagen:", error);
-      Alert.alert("Error", "No se pudo seleccionar la imagen");
+      showAlert("Error", "No se pudo seleccionar la imagen");
     }
   };
 
-  // 🔢 SOLO NÚMEROS
   const soloNumeros = (text, setter) => {
     const limpio = text.replace(/[^0-9]/g, "");
     setter(limpio);
@@ -61,23 +62,23 @@ export default function AddProductScreen({ navigation }) {
     if (loading) return;
 
     if (!nombre.trim()) {
-      return Alert.alert("Campo requerido", "Debes ingresar el nombre del producto");
+      return showAlert("Campo requerido", "Debes ingresar el nombre del producto");
     }
 
     if (!descripcion.trim()) {
-      return Alert.alert("Campo requerido", "Debes ingresar la descripción");
+      return showAlert("Campo requerido", "Debes ingresar la descripción");
     }
 
     if (!precio || parseFloat(precio) <= 0) {
-      return Alert.alert("Error", "El precio debe ser mayor a 0");
+      return showAlert("Error", "El precio debe ser mayor a 0");
     }
 
     if (!stock || parseInt(stock) < 0) {
-      return Alert.alert("Error", "El stock no puede ser negativo");
+      return showAlert("Error", "El stock no puede ser negativo");
     }
 
     if (!imagen) {
-      return Alert.alert("Campo requerido", "Debes seleccionar una imagen");
+      return showAlert("Campo requerido", "Debes seleccionar una imagen");
     }
 
     try {
@@ -95,16 +96,16 @@ export default function AddProductScreen({ navigation }) {
         precio: parseFloat(precio),
         stock: parseInt(stock),
         imagen: urlImagen,
-        estado: estado // 🔥 directo
+        estado: estado
       });
 
-      Alert.alert("Éxito", "Producto creado correctamente");
+      showAlert("Éxito", "Producto creado correctamente");
 
       navigation.navigate("Main", { refresh: true });
 
     } catch (error) {
       console.log("ERROR:", error);
-      Alert.alert("Error", "No se pudo crear el producto");
+      showAlert("Error", "No se pudo crear el producto");
     } finally {
       setLoading(false);
     }
@@ -115,7 +116,6 @@ export default function AddProductScreen({ navigation }) {
 
       <Text style={styles.title}>Agregar Postre</Text>
 
-      {/* 📸 IMAGEN */}
       <Text style={styles.label}>Imagen del Producto</Text>
 
       <TouchableOpacity style={styles.imageBox} onPress={seleccionarImagen}>
@@ -161,11 +161,9 @@ export default function AddProductScreen({ navigation }) {
         placeholder="Ej: 10"
       />
 
-      {/* 🔥 ESTADO */}
       <Text style={styles.label}>Estado</Text>
 
       <View style={styles.estadoContainer}>
-
         <TouchableOpacity
           style={[
             styles.estadoBtn,
@@ -195,10 +193,8 @@ export default function AddProductScreen({ navigation }) {
             Agotado
           </Text>
         </TouchableOpacity>
-
       </View>
 
-      {/* 🔥 BOTÓN */}
       <TouchableOpacity
         style={[styles.button, loading && { opacity: 0.6 }]}
         onPress={handleGuardar}

@@ -5,17 +5,18 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Image
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from "../context/cartContext";
 import { crearPedido } from "../services/pedidoService";
+import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
 
 export default function CartScreen({ navigation }) {
 
   const context = useContext(CartContext);
+  const { showAlert } = useAlert(); // ✅ GLOBAL
 
   if (!context) {
     return (
@@ -43,9 +44,8 @@ export default function CartScreen({ navigation }) {
   const handlePedido = async () => {
     try {
       if (carrito.length === 0) {
-        return Alert.alert("Carrito vacío", "Agrega productos primero");
+        return showAlert("Carrito vacío", "Agrega productos primero");
       }
-
 
       const pedido = {
         total,
@@ -61,11 +61,11 @@ export default function CartScreen({ navigation }) {
 
       limpiarCarrito();
 
-      Alert.alert("Éxito", "Pedido realizado 🚀");
+      showAlert("Éxito", "Pedido realizado 🚀");
 
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "No se pudo crear el pedido");
+      showAlert("Error", "No se pudo crear el pedido");
     }
   };
 
@@ -94,15 +94,9 @@ export default function CartScreen({ navigation }) {
         renderItem={({ item }) => (
           <View style={styles.card}>
 
-            {/* 🖼 IMAGEN */}
-            <Image
-              source={{ uri: item.imagen }}
-              style={styles.image}
-            />
+            <Image source={{ uri: item.imagen }} style={styles.image} />
 
-            {/* 📦 INFO */}
             <View style={{ flex: 1, marginLeft: 10 }}>
-
               <View style={styles.rowBetween}>
                 <Text style={styles.nombre}>{item.nombre}</Text>
 
@@ -115,7 +109,6 @@ export default function CartScreen({ navigation }) {
 
               <Text style={styles.precio}>${item.precio}</Text>
 
-              {/* 🔢 CONTADOR */}
               <View style={styles.controls}>
                 <TouchableOpacity
                   onPress={() =>
@@ -141,10 +134,8 @@ export default function CartScreen({ navigation }) {
                   <Text style={styles.btnCantidad}>+</Text>
                 </TouchableOpacity>
               </View>
-
             </View>
 
-            {/* 💰 TOTAL ITEM */}
             <Text style={styles.totalItem}>
               ${(item.precio * item.cantidad).toFixed(2)}
             </Text>

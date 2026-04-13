@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PostreManiac",
-    "slug": "PostreManiac",
+    "slug": "postremaniac",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,13 +20,21 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.PostreManiac"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8e54054d-b310-4dfd-941a-b1073893d6fa"
+      }
+    },
+    "owner": "zemuuv1s-organization"
   }
 }

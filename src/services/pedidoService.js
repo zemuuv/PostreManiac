@@ -1,7 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://localhost:8080/api/pedidos";
+const API_URL = "https://postremaniac-api.onrender.com/api/pedidos";
 
 // 🔥 HEADERS CENTRALIZADOS
 const getAuthHeaders = async () => {
@@ -25,7 +25,7 @@ export const obtenerPedidos = async () => {
   return axios.get(API_URL, { headers });
 };
 
-// 🔥 CLIENTE - SOLO SUS PEDIDOS (🔥 NUEVO)
+// 🔥 CLIENTE - SOLO SUS PEDIDOS
 export const obtenerMisPedidos = async () => {
   const headers = await getAuthHeaders();
   return axios.get(`${API_URL}/mis-pedidos`, { headers });

@@ -1,22 +1,24 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const API_URL = "https://postremaniac-api.onrender.com/productos";
 
-const API_URL = "http://localhost:8080/productos";
+// 🔥 HEADERS CENTRALIZADOS
+const getAuthHeaders = async () => {
+  const token = await AsyncStorage.getItem("token");
 
-
-
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  };
+};
 
 // 🔍 Obtener todos los productos
 export const getProductos = async () => {
   try {
-    const token = await AsyncStorage.getItem("token");
-    
-    const response = await axios.get(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}` // 🔥 AQUÍ ESTÁ LA CLAVE
-      }
-    });
+    const headers = await getAuthHeaders();
+
+    const response = await axios.get(API_URL, { headers });
 
     return response;
 
@@ -26,19 +28,12 @@ export const getProductos = async () => {
   }
 };
 
-
-// ➕ Crear producto (requiere token)
+// ➕ Crear producto
 export const createProducto = async (producto) => {
   try {
-    const token = await AsyncStorage.getItem("token");
+    const headers = await getAuthHeaders();
 
-    console.log("aqui esta "+token);
-
-    const response = await axios.post(API_URL, producto, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await axios.post(API_URL, producto, { headers });
 
     return response;
 
@@ -48,13 +43,17 @@ export const createProducto = async (producto) => {
   }
 };
 
-// Eliminar producto
+// 🗑 Eliminar producto
 export const deleteProducto = async (id) => {
-  const token = await getToken();
+  try {
+    const headers = await getAuthHeaders();
 
-  return axios.delete(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+    const response = await axios.delete(`${API_URL}/${id}`, { headers });
+
+    return response;
+
+  } catch (error) {
+    console.log("Error eliminando producto:", error);
+    throw error;
+  }
 };

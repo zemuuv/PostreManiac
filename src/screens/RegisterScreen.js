@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { register } from "../services/authService";
+import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
 
 export default function RegisterScreen({ navigation }) {
+
+  const { showAlert } = useAlert(); // ✅ ALERT GLOBAL
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -10,6 +13,24 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
+
+    // 🔥 VALIDACIONES
+    if (!username.trim()) {
+      return showAlert("Campo requerido", "Ingresa tu nombre", "warning");
+    }
+
+    if (!email.trim()) {
+      return showAlert("Campo requerido", "Ingresa tu correo", "warning");
+    }
+
+    if (!password.trim()) {
+      return showAlert("Campo requerido", "Ingresa tu contraseña", "warning");
+    }
+
+    if (password !== confirmPassword) {
+      return showAlert("Error", "Las contraseñas no coinciden", "error");
+    }
+
     try {
 
       await register({
@@ -19,12 +40,16 @@ export default function RegisterScreen({ navigation }) {
         confirmPassword
       });
 
-      Alert.alert("Éxito", "Usuario registrado");
+      showAlert("Éxito", "Usuario registrado correctamente", "success");
 
       navigation.navigate("Login");
 
     } catch (error) {
-      Alert.alert("Error", error.response?.data || "Error al registrar");
+      showAlert(
+        "Error",
+        error.response?.data || "Error al registrar",
+        "error"
+      );
     }
   };
 
@@ -35,10 +60,18 @@ export default function RegisterScreen({ navigation }) {
       <Text style={styles.subtitle}>Únete a nuestra comunidad dulce</Text>
 
       <Text>Nombre</Text>
-      <TextInput style={styles.input} value={username} onChangeText={setUsername} />
+      <TextInput
+        style={styles.input}
+        value={username}
+        onChangeText={setUsername}
+      />
 
       <Text>Correo</Text>
-      <TextInput style={styles.input} value={email} onChangeText={setEmail} />
+      <TextInput
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+      />
 
       <Text>Contraseña</Text>
       <TextInput
@@ -61,7 +94,9 @@ export default function RegisterScreen({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
+        <Text style={styles.link}>
+          ¿Ya tienes cuenta? Inicia sesión
+        </Text>
       </TouchableOpacity>
 
     </View>

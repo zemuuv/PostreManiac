@@ -4,14 +4,16 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Alert
+  StyleSheet
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/authService";
+import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
 
 export default function LoginScreen({ navigation }) {
+
+  const { showAlert } = useAlert(); // ✅ ALERT GLOBAL
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,13 +23,12 @@ export default function LoginScreen({ navigation }) {
 
     if (loading) return;
 
-    // 🔥 VALIDACIONES
     if (!username.trim()) {
-      return Alert.alert("Campo requerido", "Ingresa tu usuario");
+      return showAlert("Campo requerido", "Ingresa tu usuario");
     }
 
     if (!password.trim()) {
-      return Alert.alert("Campo requerido", "Ingresa tu contraseña");
+      return showAlert("Campo requerido", "Ingresa tu contraseña");
     }
 
     try {
@@ -40,15 +41,17 @@ export default function LoginScreen({ navigation }) {
       // 🔥 GUARDAR TOKEN
       await AsyncStorage.setItem("token", token);
 
-      Alert.alert("Éxito", "Login correcto");
+      // 🔥 GUARDAR USERNAME
+      await AsyncStorage.setItem("username", username);
 
-      // 🔥 REDIRECCIÓN LIMPIA
+      showAlert("Éxito", "Login correcto");
+
       navigation.replace("Main");
 
     } catch (error) {
       console.log("ERROR LOGIN:", error);
 
-      Alert.alert(
+      showAlert(
         "Error",
         error.response?.data || "Usuario o contraseña incorrectos"
       );

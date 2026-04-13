@@ -5,11 +5,11 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator
 } from "react-native";
 
 import { useFocusEffect } from "@react-navigation/native";
+import { useAlert } from "../context/AlertContext"; 
 
 import {
   obtenerPedidos,
@@ -18,6 +18,8 @@ import {
 } from "../services/pedidoService";
 
 export default function AdminOrdersScreen() {
+
+  const { showAlert } = useAlert(); 
 
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("PENDIENTE");
@@ -38,6 +40,7 @@ export default function AdminOrdersScreen() {
 
     } catch (error) {
       console.log(error);
+      showAlert("Error", "No se pudieron cargar los pedidos");
     } finally {
       setLoading(false);
     }
@@ -66,10 +69,10 @@ export default function AdminOrdersScreen() {
       await cargarPedidos();
       await cargarConteo();
 
-      Alert.alert("Éxito", "Estado actualizado");
+      showAlert("Éxito", "Estado actualizado");
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "No se pudo actualizar");
+      showAlert("Error", "No se pudo actualizar");
     }
   };
 
@@ -133,7 +136,6 @@ export default function AdminOrdersScreen() {
           <Text style={styles.total}>${item.total}</Text>
         </View>
 
-        {/* 🔥 BOTONES RESTAURADOS */}
         {item.estado === "PENDIENTE" && (
           <View style={styles.actions}>
             <TouchableOpacity
@@ -171,7 +173,6 @@ export default function AdminOrdersScreen() {
     );
   };
 
-  // 🔥 SPINNER
   if (loading) {
     return (
       <View style={styles.center}>

@@ -11,17 +11,19 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from "../context/cartContext";
 import { crearPedido } from "../services/pedidoService";
-import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
+import { useAlert } from "../context/AlertContext";
+import { ThemeContext } from "../context/ThemeContext"; // 🔥 NUEVO
 
 export default function CartScreen({ navigation }) {
 
   const context = useContext(CartContext);
-  const { showAlert } = useAlert(); // ✅ GLOBAL
+  const { showAlert } = useAlert();
+  const { theme } = useContext(ThemeContext); // 🔥 NUEVO
 
   if (!context) {
     return (
-      <View style={styles.container}>
-        <Text>Error: Contexto no cargado</Text>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Text style={{ color: theme.text }}>Error: Contexto no cargado</Text>
       </View>
     );
   }
@@ -70,17 +72,19 @@ export default function CartScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
 
       {/* 🔙 HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} />
+          <Ionicons name="arrow-back" size={24} color={theme.text} />
         </TouchableOpacity>
 
         <View>
-          <Text style={styles.title}>Mi Carrito</Text>
-          <Text style={styles.subtitle}>{carrito.length} productos</Text>
+          <Text style={[styles.title, { color: theme.text }]}>Mi Carrito</Text>
+          <Text style={[styles.subtitle, { color: theme.subtitle }]}>
+            {carrito.length} productos
+          </Text>
         </View>
       </View>
 
@@ -92,24 +96,37 @@ export default function CartScreen({ navigation }) {
         }
         contentContainerStyle={{ paddingBottom: 120 }}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: theme.card,
+              borderColor: theme.border
+            }
+          ]}>
 
             <Image source={{ uri: item.imagen }} style={styles.image} />
 
             <View style={{ flex: 1, marginLeft: 10 }}>
               <View style={styles.rowBetween}>
-                <Text style={styles.nombre}>{item.nombre}</Text>
+                <Text style={[styles.nombre, { color: theme.text }]}>
+                  {item.nombre}
+                </Text>
 
                 <TouchableOpacity
                   onPress={() => eliminarProducto(item.id || item._id)}
                 >
-                  <Ionicons name="trash-outline" size={18} color="#E89AB0" />
+                  <Ionicons name="trash-outline" size={18} color={theme.primary} />
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.precio}>${item.precio}</Text>
+              <Text style={[styles.precio, { color: theme.primary }]}>
+                ${item.precio}
+              </Text>
 
-              <View style={styles.controls}>
+              <View style={[
+                styles.controls,
+                { backgroundColor: theme.secondary }
+              ]}>
                 <TouchableOpacity
                   onPress={() =>
                     actualizarCantidad(
@@ -118,10 +135,12 @@ export default function CartScreen({ navigation }) {
                     )
                   }
                 >
-                  <Text style={styles.btnCantidad}>-</Text>
+                  <Text style={[styles.btnCantidad, { color: theme.text }]}>-</Text>
                 </TouchableOpacity>
 
-                <Text style={styles.cantidad}>{item.cantidad}</Text>
+                <Text style={[styles.cantidad, { color: theme.text }]}>
+                  {item.cantidad}
+                </Text>
 
                 <TouchableOpacity
                   onPress={() =>
@@ -131,12 +150,12 @@ export default function CartScreen({ navigation }) {
                     )
                   }
                 >
-                  <Text style={styles.btnCantidad}>+</Text>
+                  <Text style={[styles.btnCantidad, { color: theme.text }]}>+</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
-            <Text style={styles.totalItem}>
+            <Text style={[styles.totalItem, { color: theme.text }]}>
               ${(item.precio * item.cantidad).toFixed(2)}
             </Text>
 
@@ -145,29 +164,42 @@ export default function CartScreen({ navigation }) {
       />
 
       {/* 💰 RESUMEN */}
-      <View style={styles.resumen}>
-        <Text style={styles.resumenTitle}>Resumen de Compra</Text>
+      <View style={[
+        styles.resumen,
+        {
+          backgroundColor: theme.card,
+          borderColor: theme.border
+        }
+      ]}>
+        <Text style={[styles.resumenTitle, { color: theme.text }]}>
+          Resumen de Compra
+        </Text>
 
         <View style={styles.rowBetween}>
-          <Text>Subtotal</Text>
-          <Text>${subtotal.toFixed(2)}</Text>
+          <Text style={{ color: theme.text }}>Subtotal</Text>
+          <Text style={{ color: theme.text }}>${subtotal.toFixed(2)}</Text>
         </View>
 
         <View style={styles.rowBetween}>
-          <Text>Envío</Text>
-          <Text>${envio.toFixed(2)}</Text>
+          <Text style={{ color: theme.text }}>Envío</Text>
+          <Text style={{ color: theme.text }}>${envio.toFixed(2)}</Text>
         </View>
 
-        <View style={styles.line} />
+        <View style={[styles.line, { backgroundColor: theme.border }]} />
 
         <View style={styles.rowBetween}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.total}>${total.toFixed(2)}</Text>
+          <Text style={[styles.totalLabel, { color: theme.text }]}>Total</Text>
+          <Text style={[styles.total, { color: theme.primary }]}>
+            ${total.toFixed(2)}
+          </Text>
         </View>
       </View>
 
       {/* 🛒 BOTÓN */}
-      <TouchableOpacity style={styles.btn} onPress={handlePedido}>
+      <TouchableOpacity
+        style={[styles.btn, { backgroundColor: theme.primary }]}
+        onPress={handlePedido}
+      >
         <Text style={styles.btnText}>Realizar Pedido</Text>
       </TouchableOpacity>
 
@@ -178,7 +210,6 @@ export default function CartScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F6F7",
     padding: 15
   },
 
@@ -195,17 +226,16 @@ const styles = StyleSheet.create({
   },
 
   subtitle: {
-    color: "#999",
     fontSize: 12
   },
 
   card: {
     flexDirection: "row",
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 10,
     marginBottom: 12,
-    alignItems: "center"
+    alignItems: "center",
+    borderWidth: 1
   },
 
   image: {
@@ -219,18 +249,16 @@ const styles = StyleSheet.create({
   },
 
   precio: {
-    color: "#E89AB0",
     marginTop: 2
   },
 
   controls: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
-    backgroundColor: "#F3E3E8",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
+    marginTop: 8,
     alignSelf: "flex-start"
   },
 
@@ -248,10 +276,10 @@ const styles = StyleSheet.create({
   },
 
   resumen: {
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 15,
-    marginTop: 10
+    marginTop: 10,
+    borderWidth: 1
   },
 
   resumenTitle: {
@@ -267,7 +295,6 @@ const styles = StyleSheet.create({
 
   line: {
     height: 1,
-    backgroundColor: "#eee",
     marginVertical: 8
   },
 
@@ -276,12 +303,10 @@ const styles = StyleSheet.create({
   },
 
   total: {
-    fontWeight: "bold",
-    color: "#E89AB0"
+    fontWeight: "bold"
   },
 
   btn: {
-    backgroundColor: "#E89AB0",
     padding: 15,
     borderRadius: 15,
     alignItems: "center",

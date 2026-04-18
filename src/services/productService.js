@@ -17,13 +17,11 @@ const getAuthHeaders = async () => {
 export const getProductos = async () => {
   try {
     const headers = await getAuthHeaders();
-
     const response = await axios.get(API_URL, { headers });
-
     return response;
 
   } catch (error) {
-    console.log("Error obteniendo productos:", error);
+    console.log("Error obteniendo productos:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -32,13 +30,30 @@ export const getProductos = async () => {
 export const createProducto = async (producto) => {
   try {
     const headers = await getAuthHeaders();
-
     const response = await axios.post(API_URL, producto, { headers });
+    return response;
+
+  } catch (error) {
+    console.log("Error creando producto:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// ✏️ ACTUALIZAR PRODUCTO 
+export const updateProducto = async (id, producto) => {
+  try {
+    const headers = await getAuthHeaders();
+
+    const response = await axios.put(
+      `${API_URL}/${id}`,
+      producto,
+      { headers }
+    );
 
     return response;
 
   } catch (error) {
-    console.log("Error creando producto:", error);
+    console.log("Error actualizando producto:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -53,7 +68,7 @@ export const deleteProducto = async (id) => {
     return response;
 
   } catch (error) {
-    console.log("Error eliminando producto:", error);
+    console.log("Error eliminando producto:", error.response?.data || error.message);
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
     View,
     Text,
@@ -13,7 +13,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Ionicons } from "@expo/vector-icons";
 
-import { useAlert } from "../context/AlertContext"; // ✅ ALERT GLOBAL
+import { useAlert } from "../context/AlertContext";
+
+// 🔥 THEME
+import { ThemeContext } from "../context/ThemeContext";
 
 import {
     crearComentario,
@@ -25,7 +28,8 @@ import { getProductos } from "../services/productService";
 
 export default function ComentariosScreen() {
 
-    const { showAlert, showConfirm } = useAlert(); // ✅ USAR AMBOS
+    const { showAlert, showConfirm } = useAlert();
+    const { theme } = useContext(ThemeContext); // 🔥 NUEVO
 
     const [comentarios, setComentarios] = useState([]);
     const [productos, setProductos] = useState([]);
@@ -118,7 +122,6 @@ export default function ComentariosScreen() {
         }
     };
 
-    // 🔥 ELIMINAR CON CONFIRMACIÓN
     const handleEliminar = (id) => {
 
         if (!id) {
@@ -130,15 +133,9 @@ export default function ComentariosScreen() {
             "¿Seguro que quieres eliminar este comentario?",
             async () => {
                 try {
-
-                    console.log("ID a eliminar:", id); // 🔥 DEBUG
-
-                    await eliminarComentario(id); // ❌ NO uses Number()
-
+                    await eliminarComentario(id);
                     await cargarTodo();
-
                     showAlert("Éxito", "Comentario eliminado");
-
                 } catch (error) {
                     console.log("Error eliminando:", error);
                     showAlert("Error", error.message);
@@ -155,28 +152,36 @@ export default function ComentariosScreen() {
             currentUser?.trim().toLowerCase();
 
         return (
-            <View style={styles.card}>
+            <View style={[
+                styles.card,
+                {
+                    backgroundColor: theme.card,
+                    borderColor: theme.border
+                }
+            ]}>
 
                 {esMio && (
                     <TouchableOpacity
                         style={styles.botonEliminar}
                         onPress={() => handleEliminar(item.id)}
-                        activeOpacity={0.7}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // 🔥 mejora toque
                     >
                         <Ionicons name="trash-outline" size={18} color="#fff" />
                     </TouchableOpacity>
                 )}
 
-                <Text style={styles.nombre}>{item.username}</Text>
+                <Text style={[styles.nombre, { color: theme.text }]}>
+                    {item.username}
+                </Text>
 
-                <Text style={styles.postre}>
+                <Text style={[styles.postre, { color: theme.primary }]}>
                     🍰 {producto ? producto.nombre : "Postre"}
                 </Text>
 
-                <Text style={styles.comentario}>{item.contenido}</Text>
+                <Text style={[styles.comentario, { color: theme.text }]}>
+                    {item.contenido}
+                </Text>
 
-                <Text style={styles.fecha}>
+                <Text style={[styles.fecha, { color: theme.subtitle }]}>
                     {formatearFecha(item.fecha)}
                 </Text>
 
@@ -185,17 +190,27 @@ export default function ComentariosScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+            { backgroundColor: theme.background }
+        ]}>
 
-            <Text style={styles.titulo}>💬 Comentarios</Text>
+            <Text style={[styles.titulo, { color: theme.text }]}>
+                💬 Comentarios
+            </Text>
 
-            <Text style={styles.subtitulo}>
+            <Text style={[styles.subtitulo, { color: theme.subtitle }]}>
                 Comparte tu experiencia con nuestros postres ✨
             </Text>
 
-            <View style={styles.formContainer}>
+            <View style={[
+                styles.formContainer,
+                { backgroundColor: theme.card }
+            ]}>
 
-                <Text style={styles.label}>Selecciona un postre 🍰</Text>
+                <Text style={[styles.label, { color: theme.text }]}>
+                    Selecciona un postre 🍰
+                </Text>
 
                 <DropDownPicker
                     open={open}
@@ -205,21 +220,35 @@ export default function ComentariosScreen() {
                     setValue={setValue}
                     setItems={setItems}
                     placeholder="Selecciona..."
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
+                    style={[
+                        styles.dropdown,
+                        { borderColor: theme.border, backgroundColor: theme.background }
+                    ]}
+                    dropDownContainerStyle={{
+                        borderColor: theme.border,
+                        backgroundColor: theme.card
+                    }}
+                    textStyle={{ color: theme.text }}
                 />
 
-                <View style={styles.comentarioBox}>
+                <View style={[
+                    styles.comentarioBox,
+                    {
+                        backgroundColor: theme.background,
+                        borderColor: theme.border
+                    }
+                ]}>
                     <TextInput
-                        style={styles.textArea}
+                        style={[styles.textArea, { color: theme.text }]}
                         placeholder="Escribe tu comentario..."
+                        placeholderTextColor={theme.subtitle}
                         value={contenido}
                         onChangeText={setContenido}
                         multiline
                     />
 
                     <TouchableOpacity
-                        style={styles.botonEnviar}
+                        style={[styles.botonEnviar, { backgroundColor: theme.primary }]}
                         onPress={enviarComentario}
                     >
                         <Text style={styles.iconoEnviar}>➤</Text>
@@ -229,9 +258,9 @@ export default function ComentariosScreen() {
             </View>
 
             {loading ? (
-                <ActivityIndicator size="large" color="#E89AB0" />
+                <ActivityIndicator size="large" color={theme.primary} />
             ) : comentarios.length === 0 ? (
-                <Text style={styles.empty}>
+                <Text style={[styles.empty, { color: theme.subtitle }]}>
                     No hay comentarios aún 🍰{"\n"}¡Sé el primero!
                 </Text>
             ) : (
@@ -248,88 +277,60 @@ export default function ComentariosScreen() {
 }
 
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
-        padding: 15,
-        backgroundColor: "#F5EDE6"
+        padding: 15
     },
-
     titulo: {
         fontSize: 26,
-        fontWeight: "bold",
-        color: "#5A3E36"
+        fontWeight: "bold"
     },
-
     subtitulo: {
-        marginBottom: 15,
-        color: "#A67C7C"
+        marginBottom: 15
     },
-
     formContainer: {
-        backgroundColor: "#FFFDF9",
         padding: 15,
         borderRadius: 25,
         marginBottom: 20,
         elevation: 4,
         zIndex: 1000
     },
-
     label: {
         marginBottom: 5,
-        color: "#6B4F4F",
         fontWeight: "600"
     },
-
     dropdown: {
         borderRadius: 20,
-        borderColor: "#E8CFC0",
         marginBottom: 10
     },
-
-    dropdownContainer: {
-        borderRadius: 20,
-        borderColor: "#E8CFC0"
-    },
-
     comentarioBox: {
-        backgroundColor: "#fff",
         borderRadius: 25,
         padding: 10,
         flexDirection: "row",
         alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#F1D6D6"
+        borderWidth: 1
     },
-
     textArea: {
         flex: 1,
         minHeight: 40
     },
-
     botonEnviar: {
-        backgroundColor: "#E89AB0",
         padding: 12,
         borderRadius: 50,
         elevation: 5
     },
-
     iconoEnviar: {
         color: "white",
         fontSize: 16
     },
-
     card: {
-        backgroundColor: "#FFFDF9",
         padding: 15,
         borderRadius: 25,
         marginBottom: 15,
         elevation: 4,
         borderWidth: 1,
-        borderColor: "#EADBC8",
         position: "relative"
     },
-
     botonEliminar: {
         position: "absolute",
         top: 10,
@@ -341,34 +342,23 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         elevation: 10,
-        zIndex: 999 // 🔥 FIX CLAVE
+        zIndex: 999
     },
-
     nombre: {
-        fontWeight: "bold",
-        color: "#6B4F4F"
+        fontWeight: "bold"
     },
-
     postre: {
-        color: "#D88C9A",
         marginBottom: 5,
         fontWeight: "600"
     },
-
     comentario: {
-        marginBottom: 5,
-        color: "#333"
+        marginBottom: 5
     },
-
     fecha: {
-        fontSize: 11,
-        color: "#999"
+        fontSize: 11
     },
-
     empty: {
         textAlign: "center",
-        marginTop: 40,
-        color: "#A67C7C"
+        marginTop: 40
     }
-
 });

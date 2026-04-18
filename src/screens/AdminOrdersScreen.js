@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,10 @@ import {
 } from "react-native";
 
 import { useFocusEffect } from "@react-navigation/native";
-import { useAlert } from "../context/AlertContext"; 
+import { useAlert } from "../context/AlertContext";
+
+// 🔥 THEME
+import { ThemeContext } from "../context/ThemeContext";
 
 import {
   obtenerPedidos,
@@ -19,7 +22,8 @@ import {
 
 export default function AdminOrdersScreen() {
 
-  const { showAlert } = useAlert(); 
+  const { showAlert } = useAlert();
+  const { theme } = useContext(ThemeContext);
 
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("PENDIENTE");
@@ -34,10 +38,8 @@ export default function AdminOrdersScreen() {
   const cargarPedidos = async () => {
     try {
       setLoading(true);
-
       const res = await obtenerPedidos();
       setPedidos(res.data);
-
     } catch (error) {
       console.log(error);
       showAlert("Error", "No se pudieron cargar los pedidos");
@@ -65,10 +67,8 @@ export default function AdminOrdersScreen() {
   const cambiarEstado = async (id, nuevoEstado) => {
     try {
       await actualizarEstadoPedido(id, nuevoEstado);
-
       await cargarPedidos();
       await cargarConteo();
-
       showAlert("Éxito", "Estado actualizado");
     } catch (error) {
       console.log(error);
@@ -103,10 +103,18 @@ export default function AdminOrdersScreen() {
     const shortId = item.id?.slice(-5);
 
     return (
-      <View style={styles.card}>
+      <View style={[
+        styles.card,
+        {
+          backgroundColor: theme.card,
+          borderColor: theme.border
+        }
+      ]}>
 
         <View style={styles.rowBetween}>
-          <Text style={styles.title}>Pedido #{shortId}</Text>
+          <Text style={[styles.title, { color: theme.text }]}>
+            Pedido #{shortId}
+          </Text>
 
           <View style={[styles.badge, { backgroundColor: estadoStyle.backgroundColor }]}>
             <Text style={{ color: estadoStyle.color }}>
@@ -115,41 +123,41 @@ export default function AdminOrdersScreen() {
           </View>
         </View>
 
-        <Text style={styles.cliente}>
+        <Text style={[styles.cliente, { color: theme.text }]}>
           Usuario: {item.username || "Sin nombre"}
         </Text>
 
-        <Text style={styles.fecha}>
+        <Text style={[styles.fecha, { color: theme.subtitle }]}>
           {new Date(item.fecha).toLocaleString()}
         </Text>
 
-        <View style={styles.line} />
+        <View style={[styles.line, { backgroundColor: theme.border }]} />
 
         {item.detalles?.map((d, index) => (
-          <Text key={index} style={styles.item}>
+          <Text key={index} style={{ color: theme.text }}>
             {d.cantidad}x {d.nombreProducto}
           </Text>
         ))}
 
         <View style={styles.rowBetween}>
-          <Text>Total</Text>
-          <Text style={styles.total}>${item.total}</Text>
+          <Text style={{ color: theme.text }}>Total</Text>
+          <Text style={[styles.total, { color: theme.primary }]}>
+            ${item.total}
+          </Text>
         </View>
 
         {item.estado === "PENDIENTE" && (
-          <View style={styles.actions}>
-            <TouchableOpacity
-              style={styles.btnPrimary}
-              onPress={() => cambiarEstado(item.id, "EN_PROCESO")}
-            >
-              <Text style={styles.btnText}>Aceptar</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.btnPrimary, { backgroundColor: theme.primary }]}
+            onPress={() => cambiarEstado(item.id, "EN_PROCESO")}
+          >
+            <Text style={styles.btnText}>Aceptar</Text>
+          </TouchableOpacity>
         )}
 
         {item.estado === "EN_PROCESO" && (
           <TouchableOpacity
-            style={styles.btnPrimary}
+            style={[styles.btnPrimary, { backgroundColor: theme.primary }]}
             onPress={() => cambiarEstado(item.id, "EN_CAMINO")}
           >
             <Text style={styles.btnText}>En camino</Text>
@@ -158,7 +166,7 @@ export default function AdminOrdersScreen() {
 
         {item.estado === "EN_CAMINO" && (
           <TouchableOpacity
-            style={styles.btnPrimary}
+            style={[styles.btnPrimary, { backgroundColor: theme.primary }]}
             onPress={() => cambiarEstado(item.id, "ENTREGADO")}
           >
             <Text style={styles.btnText}>Entregado</Text>
@@ -175,41 +183,65 @@ export default function AdminOrdersScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#E89AB0" />
+      <View style={[styles.center, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      { backgroundColor: theme.background }
+    ]}>
 
-      <Text style={styles.header}>Panel Administrador</Text>
-      <Text style={styles.subheader}>{pedidos.length} pedidos</Text>
+      <Text style={[styles.header, { color: theme.text }]}>
+        Panel Administrador
+      </Text>
 
+      <Text style={[styles.subheader, { color: theme.subtitle }]}>
+        {pedidos.length} pedidos
+      </Text>
+
+      {/* 🔥 TABS CORREGIDOS */}
       <View style={styles.tabs}>
         <TouchableOpacity
-          style={[styles.tab, filtro === "PENDIENTE" && styles.tabActive]}
+          style={[
+            styles.tab,
+            {
+              backgroundColor: filtro === "PENDIENTE" ? "#FFF3CD" : theme.card
+            }
+          ]}
           onPress={() => setFiltro("PENDIENTE")}
         >
-          <Text>Pendientes</Text>
-          <Text>{conteo.PENDIENTE || 0}</Text>
+          <Text style={styles.tabText}>Pendientes</Text>
+          <Text style={styles.tabNumber}>{conteo.PENDIENTE || 0}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tab, filtro === "EN_PROCESO" && styles.tabActiveBlue]}
+          style={[
+            styles.tab,
+            {
+              backgroundColor: filtro === "EN_PROCESO" ? "#D6E4FF" : theme.card
+            }
+          ]}
           onPress={() => setFiltro("EN_PROCESO")}
         >
-          <Text>En proceso</Text>
-          <Text>{conteo.EN_PROCESO || 0}</Text>
+          <Text style={styles.tabText}>En proceso</Text>
+          <Text style={styles.tabNumber}>{conteo.EN_PROCESO || 0}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tab, filtro === "COMPLETADO" && styles.tabActiveGreen]}
+          style={[
+            styles.tab,
+            {
+              backgroundColor: filtro === "COMPLETADO" ? "#D1FAE5" : theme.card
+            }
+          ]}
           onPress={() => setFiltro("COMPLETADO")}
         >
-          <Text>Completados</Text>
-          <Text>{conteo.ENTREGADO || 0}</Text>
+          <Text style={styles.tabText}>Completados</Text>
+          <Text style={styles.tabNumber}>{conteo.ENTREGADO || 0}</Text>
         </TouchableOpacity>
       </View>
 
@@ -233,8 +265,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding: 15,
-    backgroundColor: "#F8F6F7"
+    padding: 15
   },
 
   header: {
@@ -243,7 +274,6 @@ const styles = StyleSheet.create({
   },
 
   subheader: {
-    color: "#999",
     marginBottom: 10
   },
 
@@ -258,27 +288,24 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 15,
     alignItems: "center",
-    backgroundColor: "#eee",
     marginHorizontal: 3
   },
 
-  tabActive: {
-    backgroundColor: "#FFF3CD"
+  // 🔥 NUEVOS ESTILOS
+  tabText: {
+    color: "#000",
+    fontWeight: "bold"
   },
 
-  tabActiveBlue: {
-    backgroundColor: "#D6E4FF"
-  },
-
-  tabActiveGreen: {
-    backgroundColor: "#D1FAE5"
+  tabNumber: {
+    color: "#000"
   },
 
   card: {
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 15,
-    marginBottom: 12
+    marginBottom: 12,
+    borderWidth: 1
   },
 
   rowBetween: {
@@ -301,46 +328,22 @@ const styles = StyleSheet.create({
   },
 
   fecha: {
-    color: "#999",
     fontSize: 12
   },
 
   line: {
     height: 1,
-    backgroundColor: "#eee",
     marginVertical: 8
   },
 
-  item: {
-    color: "#666"
-  },
-
   total: {
-    color: "#E89AB0",
     fontWeight: "bold"
   },
 
-  actions: {
-    flexDirection: "row",
-    marginTop: 10,
-    gap: 10
-  },
-
   btnPrimary: {
-    backgroundColor: "#E89AB0",
     padding: 10,
     borderRadius: 12,
     alignItems: "center",
-    flex: 1,
-    marginTop: 10
-  },
-
-  btnSecondary: {
-    backgroundColor: "#eee",
-    padding: 10,
-    borderRadius: 12,
-    alignItems: "center",
-    flex: 1,
     marginTop: 10
   },
 

@@ -6,7 +6,8 @@ import CatalogScreen from "../screens/CatalogScreen";
 import CartScreen from "../screens/CartScreen";
 import AdminOrdersScreen from "../screens/AdminOrdersScreen";
 import UserOrdersScreen from "../screens/UserOrdersScreen";
-import ComentariosScreen from "../screens/ComentariosScreen"; // 🔥 NUEVO
+import ComentariosScreen from "../screens/ComentariosScreen";
+import PerfilScreen from "../screens/PerfilScreen"; // 🔥 NUEVO
 
 import { getUserRole } from "../utils/auth";
 
@@ -54,6 +55,8 @@ export default function TabNavigator() {
             iconName = focused ? "receipt" : "receipt-outline";
           } else if (route.name === "Comentarios") {
             iconName = focused ? "chatbubble" : "chatbubble-outline";
+          } else if (route.name === "Perfil") {
+            iconName = focused ? "person" : "person-outline"; // 🔥 NUEVO
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -99,6 +102,13 @@ export default function TabNavigator() {
           options={{ tabBarLabel: "Mis pedidos" }}
         />
       )}
+
+      {/* 👤 PERFIL 🔥 */}
+      <Tab.Screen
+        name="Perfil"
+        component={PerfilScreen}
+        options={{ tabBarLabel: "Perfil" }}
+      />
 
     </Tab.Navigator>
   );

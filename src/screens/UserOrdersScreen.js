@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,11 @@ import {
 
 import { obtenerMisPedidos } from "../services/pedidoService";
 import { useFocusEffect } from "@react-navigation/native";
+import { ThemeContext } from "../context/ThemeContext"; // 🔥 NUEVO
 
 export default function UserOrdersScreen() {
+
+  const { theme } = useContext(ThemeContext); // 🔥 NUEVO
 
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,26 +32,25 @@ export default function UserOrdersScreen() {
     }
   };
 
-  // 🔥 SE EJECUTA CADA VEZ QUE ENTRAS AL TAB
   useFocusEffect(
     useCallback(() => {
       cargarPedidos();
     }, [])
   );
 
-  // 🎨 COLOR DEL ESTADO
+  // 🎨 COLORES MÁS SUAVES (compatibles con tu tema)
   const getEstadoStyle = (estado) => {
     switch (estado) {
       case "PENDIENTE":
-        return { color: "#D39E00" };
+        return { color: "#E6A700" };
       case "EN_PROCESO":
-        return { color: "#1D4ED8" };
+        return { color: "#5B8DEF" };
       case "EN_CAMINO":
-        return { color: "#7C3AED" };
+        return { color: "#9B6DFF" };
       case "ENTREGADO":
-        return { color: "#059669" };
+        return { color: "#4CAF50" };
       default:
-        return { color: "#999" };
+        return { color: theme.subtitle };
     }
   };
 
@@ -57,33 +59,37 @@ export default function UserOrdersScreen() {
     const estadoStyle = getEstadoStyle(item.estado);
 
     return (
-      <View style={styles.card}>
+      <View style={[
+        styles.card,
+        {
+          backgroundColor: theme.card,
+          borderColor: theme.border
+        }
+      ]}>
 
-        {/* 🔥 ESTADO */}
         <Text style={[styles.estado, estadoStyle]}>
           {item.estado.replace("_", " ")}
         </Text>
 
-        {/* 📅 FECHA */}
-        <Text style={styles.fecha}>
+        <Text style={[styles.fecha, { color: theme.subtitle }]}>
           {new Date(item.fecha).toLocaleString()}
         </Text>
 
-        <View style={styles.line} />
+        <View style={[styles.line, { backgroundColor: theme.border }]} />
 
-        {/* 📦 DETALLES */}
         {item.detalles?.map((d) => (
-          <Text key={d.id} style={styles.item}>
+          <Text key={d.id} style={[styles.item, { color: theme.text }]}>
             {d.cantidad}x {d.nombreProducto}
           </Text>
         ))}
 
-        <View style={styles.line} />
+        <View style={[styles.line, { backgroundColor: theme.border }]} />
 
-        {/* 💰 TOTAL */}
         <View style={styles.rowBetween}>
-          <Text>Total</Text>
-          <Text style={styles.total}>${item.total}</Text>
+          <Text style={{ color: theme.text }}>Total</Text>
+          <Text style={[styles.total, { color: theme.primary }]}>
+            ${item.total}
+          </Text>
         </View>
 
       </View>
@@ -92,16 +98,27 @@ export default function UserOrdersScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#E89AB0" />
+      <View style={[
+        styles.center,
+        { backgroundColor: theme.background }
+      ]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      { backgroundColor: theme.background }
+    ]}>
 
-      <Text style={styles.header}>Mis Pedidos</Text>
+      <Text style={[
+        styles.header,
+        { color: theme.text }
+      ]}>
+        Mis Pedidos
+      </Text>
 
       <FlatList
         data={pedidos}
@@ -109,7 +126,7 @@ export default function UserOrdersScreen() {
         renderItem={renderPedido}
         contentContainerStyle={{ paddingBottom: 100 }}
         ListEmptyComponent={
-          <Text style={{ textAlign: "center", marginTop: 20 }}>
+          <Text style={{ textAlign: "center", marginTop: 20, color: theme.subtitle }}>
             No tienes pedidos aún 😢
           </Text>
         }
@@ -122,7 +139,6 @@ export default function UserOrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F6F7",
     padding: 15
   },
 
@@ -133,10 +149,10 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 15,
-    marginBottom: 12
+    marginBottom: 12,
+    borderWidth: 1
   },
 
   estado: {
@@ -145,19 +161,16 @@ const styles = StyleSheet.create({
   },
 
   fecha: {
-    color: "#999",
     fontSize: 12,
     marginTop: 3
   },
 
   line: {
     height: 1,
-    backgroundColor: "#eee",
     marginVertical: 8
   },
 
   item: {
-    color: "#666",
     marginBottom: 2
   },
 
@@ -167,7 +180,6 @@ const styles = StyleSheet.create({
   },
 
   total: {
-    color: "#E89AB0",
     fontWeight: "bold"
   },
 

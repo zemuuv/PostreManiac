@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -9,11 +9,15 @@ import {
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../services/authService";
-import { useAlert } from "../context/AlertContext"; // ✅ NUEVO
+import { useAlert } from "../context/AlertContext";
+import { ThemeContext } from "../context/ThemeContext";
+import { CartContext } from "../context/cartContext"; // ✅ IMPORT NUEVO
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, setIsLogged }) {
 
-  const { showAlert } = useAlert(); // ✅ ALERT GLOBAL
+  const { showAlert } = useAlert();
+  const { theme } = useContext(ThemeContext);
+  const { limpiarCarrito } = useContext(CartContext); // ✅ CONTEXTO DEL CARRITO
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,15 +40,17 @@ export default function LoginScreen({ navigation }) {
 
       const response = await login({ username, password });
 
-      const token = response.data;
+      const { token, email, rol, username: userFromBackend } = response.data;
 
-      // 🔥 GUARDAR TOKEN
       await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("username", userFromBackend || username);
+      await AsyncStorage.setItem("email", email);
+      await AsyncStorage.setItem("rol", rol);
 
-      // 🔥 GUARDAR USERNAME
-      await AsyncStorage.setItem("username", username);
+      // 🧹 LIMPIAR CARRITO AL CAMBIAR DE USUARIO
+      limpiarCarrito();
 
-      showAlert("Éxito", "Login correcto");
+      showAlert("Éxito", "Login correcto 🎉");
 
       navigation.replace("Main");
 
@@ -61,32 +67,64 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      { backgroundColor: theme.background }
+    ]}>
 
-      <Text style={styles.title}>PostreManiac</Text>
-      <Text style={styles.subtitle}>
+      <Text style={[
+        styles.title,
+        { color: theme.text }
+      ]}>
+        PostreManiac
+      </Text>
+
+      <Text style={[
+        styles.subtitle,
+        { color: theme.subtitle }
+      ]}>
         Tus postres favoritos en un solo lugar
       </Text>
 
-      <Text>Usuario</Text>
+      <Text style={{ color: theme.text }}>Usuario</Text>
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: theme.card,
+            borderColor: theme.border,
+            color: theme.text
+          }
+        ]}
         placeholder="Ingresa tu usuario"
+        placeholderTextColor={theme.subtitle}
         value={username}
         onChangeText={setUsername}
       />
 
-      <Text>Contraseña</Text>
+      <Text style={{ color: theme.text }}>Contraseña</Text>
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            backgroundColor: theme.card,
+            borderColor: theme.border,
+            color: theme.text
+          }
+        ]}
         placeholder="********"
+        placeholderTextColor={theme.subtitle}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
       <TouchableOpacity
-        style={[styles.button, loading && { opacity: 0.6 }]}
+        style={[
+          styles.button,
+          { backgroundColor: theme.primary },
+          loading && { opacity: 0.6 }
+        ]}
         onPress={handleLogin}
         disabled={loading}
       >
@@ -96,7 +134,10 @@ export default function LoginScreen({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.link}>
+        <Text style={[
+          styles.link,
+          { color: theme.primary }
+        ]}>
           ¿No tienes cuenta? Regístrate aquí
         </Text>
       </TouchableOpacity>
@@ -106,22 +147,43 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 28, textAlign: "center", fontWeight: "bold" },
-  subtitle: { textAlign: "center", marginBottom: 30 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20
+  },
+
+  title: {
+    fontSize: 28,
+    textAlign: "center",
+    fontWeight: "bold"
+  },
+
+  subtitle: {
+    textAlign: "center",
+    marginBottom: 30
+  },
+
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 10,
     padding: 10,
     marginBottom: 15
   },
+
   button: {
-    backgroundColor: "#E89AB0",
     padding: 15,
     borderRadius: 10,
     alignItems: "center"
   },
-  buttonText: { color: "#fff", fontWeight: "bold" },
-  link: { textAlign: "center", marginTop: 15, color: "pink" }
+
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold"
+  },
+
+  link: {
+    textAlign: "center",
+    marginTop: 15
+  }
 });

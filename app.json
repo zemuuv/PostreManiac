@@ -4,37 +4,46 @@
     "slug": "postremaniac",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+
+    "icon": "./assets/Postremaniac.png",
+
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
       "supportsTablet": true
     },
+
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/PostremaniacApp.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.PostreManiac"
     },
+
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
     "plugins": [
       "expo-router"
     ],
+
     "extra": {
       "router": {},
       "eas": {
         "projectId": "8e54054d-b310-4dfd-941a-b1073893d6fa"
       }
     },
+
     "owner": "zemuuv1s-organization"
   }
 }

@@ -11,16 +11,45 @@ export const getToken = async () => {
   }
 };
 
-// 🔥 Obtener datos completos del usuario
-export const getUserData = async () => {
+// 🔥 Verificar si el token es válido
+export const isTokenValid = async () => {
   try {
     const token = await getToken();
 
-    if (!token) return null;
+    if (!token) return false;
 
     const decoded = jwtDecode(token);
 
-    return decoded; 
+    // 🔥 Validar expiración
+    const now = Date.now() / 1000; // en segundos
+
+    if (decoded.exp < now) {
+      console.log("⚠️ Token expirado");
+
+      await logout(); // 🔥 eliminar sesión automáticamente
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+    console.log("Error validando token:", error);
+    return false;
+  }
+};
+
+// 🔥 Obtener datos completos del usuario
+export const getUserData = async () => {
+  try {
+    const tokenValido = await isTokenValid();
+
+    if (!tokenValido) return null;
+
+    const token = await getToken();
+    const decoded = jwtDecode(token);
+
+    return decoded;
+
   } catch (error) {
     console.log("Error decodificando token:", error);
     return null;
@@ -38,7 +67,7 @@ export const getUserRole = async () => {
   }
 };
 
-// 🔥 Obtener ID del usuario 
+// 🔥 Obtener ID del usuario
 export const getUserId = async () => {
   try {
     const user = await getUserData();
@@ -49,7 +78,7 @@ export const getUserId = async () => {
   }
 };
 
-// 🔥 Obtener username 
+// 🔥 Obtener username
 export const getUsername = async () => {
   try {
     const user = await getUserData();
@@ -60,10 +89,24 @@ export const getUsername = async () => {
   }
 };
 
-// 🔥 Logout 
+// 🔥 Obtener email
+export const getUserEmail = async () => {
+  try {
+    const user = await getUserData();
+    return user?.email || null;
+  } catch (error) {
+    console.log("Error obteniendo email:", error);
+    return null;
+  }
+};
+
+// 🔥 Logout
 export const logout = async () => {
   try {
     await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("username");
+    await AsyncStorage.removeItem("email");
+    await AsyncStorage.removeItem("rol");
   } catch (error) {
     console.log("Error cerrando sesión:", error);
   }

@@ -41,7 +41,6 @@ export default function AdminOrdersScreen() {
       const res = await obtenerPedidos();
       setPedidos(res.data);
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudieron cargar los pedidos");
     } finally {
       setLoading(false);
@@ -71,7 +70,6 @@ export default function AdminOrdersScreen() {
       await cargarConteo();
       showAlert("Éxito", "Estado actualizado");
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudo actualizar");
     }
   };

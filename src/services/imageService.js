@@ -28,12 +28,9 @@ export const subirImagenFirebase = async (uri) => {
 
     const url = await getDownloadURL(storageRef);
 
-    console.log("✅ Imagen subida:", url);
-
     return url;
 
   } catch (error) {
-    console.log("❌ Error subiendo imagen:", error.message);
     throw error;
   }
 };
@@ -53,8 +50,6 @@ export const eliminarImagenFirebase = async (url) => {
     const imageRef = ref(storage, path);
 
     await deleteObject(imageRef);
-
-    console.log("🗑 Imagen eliminada:", path);
 
   } catch (error) {
 

@@ -70,7 +70,6 @@ export default function AddProductScreen({ navigation }) {
       }
 
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudo seleccionar la imagen");
     }
   };
@@ -122,7 +121,6 @@ export default function AddProductScreen({ navigation }) {
       navigation.navigate("Main", { refresh: true });
 
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudo crear el producto");
     } finally {
       setLoading(false);

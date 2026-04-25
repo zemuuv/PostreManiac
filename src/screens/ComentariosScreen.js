@@ -87,7 +87,6 @@ export default function ComentariosScreen() {
             setItems(mappedItems);
 
         } catch (error) {
-            console.log("Error cargando datos:", error);
             showAlert("Error", "No se pudieron cargar los datos");
         } finally {
             setLoading(false);
@@ -115,7 +114,6 @@ export default function ComentariosScreen() {
             showAlert("Éxito", "Comentario publicado 🎉");
 
         } catch (error) {
-            console.log("Error enviando comentario:", error);
             showAlert("Error", "No se pudo enviar el comentario");
         } finally {
             setLoading(false);
@@ -137,7 +135,6 @@ export default function ComentariosScreen() {
                     await cargarTodo();
                     showAlert("Éxito", "Comentario eliminado");
                 } catch (error) {
-                    console.log("Error eliminando:", error);
                     showAlert("Error", error.message);
                 }
             }

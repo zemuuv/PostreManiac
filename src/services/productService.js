@@ -34,7 +34,6 @@ export const createProducto = async (producto) => {
     return response;
 
   } catch (error) {
-    console.log("Error creando producto:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -53,7 +52,6 @@ export const updateProducto = async (id, producto) => {
     return response;
 
   } catch (error) {
-    console.log("Error actualizando producto:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -68,7 +66,6 @@ export const deleteProducto = async (id) => {
     return response;
 
   } catch (error) {
-    console.log("Error eliminando producto:", error.response?.data || error.message);
     throw error;
   }
 };

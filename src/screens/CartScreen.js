@@ -66,7 +66,6 @@ export default function CartScreen({ navigation }) {
       showAlert("Éxito", "Pedido realizado 🚀");
 
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudo crear el pedido");
     }
   };

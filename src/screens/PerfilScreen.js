@@ -35,7 +35,6 @@ export default function PerfilScreen({ navigation, setIsLogged }) {
       setRol(userRole || "USER");
 
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudieron cargar los datos");
     }
   };

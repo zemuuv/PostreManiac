@@ -52,7 +52,6 @@ export default function ProductDetailScreen({ route, navigation }) {
     const handleAgregar = () => {
 
         if (!producto.id) {
-            console.log("❌ Producto sin ID:", producto);
             return showAlert("Error", "El producto no tiene ID");
         }
 
@@ -84,7 +83,6 @@ export default function ProductDetailScreen({ route, navigation }) {
                 navigation.navigate("Main", { refresh: true });
 
             } catch (error) {
-                console.log(error);
                 showAlert("Error", "No se pudo eliminar");
             }
         }

@@ -198,5 +198,4 @@ export const AlertProvider = ({ children }) => {
   );
 };
 
-// 🔥 HOOK
 export const useAlert = () => useContext(AlertContext);

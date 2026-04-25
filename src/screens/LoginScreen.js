@@ -55,7 +55,6 @@ export default function LoginScreen({ navigation, setIsLogged }) {
       navigation.replace("Main");
 
     } catch (error) {
-      console.log("ERROR LOGIN:", error);
 
       showAlert(
         "Error",

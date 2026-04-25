@@ -88,7 +88,6 @@ export default function EditProductScreen({ route, navigation }) {
       }
 
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudo seleccionar la imagen");
     }
   };
@@ -143,7 +142,6 @@ export default function EditProductScreen({ route, navigation }) {
       navigation.navigate("Main", { refresh: true });
 
     } catch (error) {
-      console.log(error);
       showAlert("Error", "No se pudo actualizar");
     } finally {
       setLoading(false);

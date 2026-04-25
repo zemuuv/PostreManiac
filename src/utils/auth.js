@@ -33,7 +33,6 @@ export const isTokenValid = async () => {
     return true;
 
   } catch (error) {
-    console.log("Error validando token:", error);
     return false;
   }
 };
@@ -51,7 +50,6 @@ export const getUserData = async () => {
     return decoded;
 
   } catch (error) {
-    console.log("Error decodificando token:", error);
     return null;
   }
 };
@@ -62,7 +60,6 @@ export const getUserRole = async () => {
     const user = await getUserData();
     return user?.rol || null;
   } catch (error) {
-    console.log("Error obteniendo rol:", error);
     return null;
   }
 };
@@ -73,7 +70,6 @@ export const getUserId = async () => {
     const user = await getUserData();
     return user?.id || null;
   } catch (error) {
-    console.log("Error obteniendo ID:", error);
     return null;
   }
 };
@@ -84,7 +80,6 @@ export const getUsername = async () => {
     const user = await getUserData();
     return user?.sub || null;
   } catch (error) {
-    console.log("Error obteniendo username:", error);
     return null;
   }
 };
@@ -95,7 +90,6 @@ export const getUserEmail = async () => {
     const user = await getUserData();
     return user?.email || null;
   } catch (error) {
-    console.log("Error obteniendo email:", error);
     return null;
   }
 };
